@@ -6,6 +6,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +23,7 @@ public class InputFeedBack extends LinearLayout{
 
     private String regex;
     private String errorMessage;
-    private String label = "TEST";
+    private String label;
     private EditText textField;
     private TextView errorView;
     private TextView labelView;
@@ -30,6 +31,8 @@ public class InputFeedBack extends LinearLayout{
     private InputValidator inputValidator;
 
     private int errorMessageTextSize = 11;
+
+    private int textFieldSize = 600;
 
     private int imgResInvalidInput = R.drawable.cross;
     private int imgResValidInput = R.drawable.check;
@@ -41,47 +44,44 @@ public class InputFeedBack extends LinearLayout{
 
     private static String ERROR_MESSAGE_DEAFULT= "Input not valid";
     private static String ERROR_MESSAGE_EMAIL = "Not a valid Email adress";
-    private static String ERROR_MESSAGE_PASSWORD = "Needs to between 4-8 charactres and contain both letters and numbers";
+    private static String ERROR_MESSAGE_PASSWORD = "Password: 4-8 charactres and contain both letters and numbers";
     private static String ERROR_MESSAGE_NUMBERS = "Input must contain only digits";
+
 
     public static int TYPE_EMAIL = 0;
     public static int TYPE_PASSWORD = 1;
     public static int TYPE_NUMBER = 2;
     public static int TYPE_DEFAULT = 3;
+    private static int TYPE_CUSTOM = 4;
 
-    public InputFeedBack(Context context, int type){
+
+    public InputFeedBack(Context context, String label, int type){
         super(context);
-        setup(context, type);
+        setup(context, label, type);
+    }
+
+    public InputFeedBack(Context context, String label, String errorMessage, String regex){
+        super(context);
+        this.errorMessage = errorMessage;
+        this.regex = regex;
+        setup(context, label, TYPE_CUSTOM);
+    }
+
+    public InputFeedBack(Context context, String label, String errorMessage, InputValidator inputValidator){
+        super(context);
+        this.errorMessage = errorMessage;
+        this.inputValidator = inputValidator;
+        setup(context, label, TYPE_CUSTOM);
     }
 
 
-    public InputFeedBack(Context context){
+    public InputFeedBack(Context context, String label){
         super(context);
-        setup(context, TYPE_DEFAULT);
+        setup(context, label, TYPE_DEFAULT);
     }
 
-
-
-    private void setup(Context context, int type){
-        this.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout verticalRow = new LinearLayout(context);
-        verticalRow.setOrientation(LinearLayout.HORIZONTAL);
-        labelView = new TextView(context);
-        labelView.setText(label);
-        textField = new EditText(context);
-        textField.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        textField.getLayoutParams().width = 500; //FIX this
-        errorView = new TextView(context);
-        errorView.setTextSize(errorMessageTextSize);
-        statusImage = new ImageView(context);
-        LinearLayout.LayoutParams imageVeiwParams = new LinearLayout.LayoutParams(50,50);
-        imageVeiwParams.gravity = Gravity.CENTER;
-        statusImage.setLayoutParams(imageVeiwParams);
-        verticalRow.addView(labelView);
-        verticalRow.addView(textField);
-        verticalRow.addView(statusImage);
-        this.addView(verticalRow);
-        this.addView(errorView);
+    private void setup(Context context ,String label, int type){
+        createLayout(context, label);
         setupType(textField, type);
         addListeners();
         inputValidator = new InputValidator(){
@@ -93,6 +93,36 @@ public class InputFeedBack extends LinearLayout{
             }
         };
     }
+    private void createLayout(Context context ,String label){
+        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        this.setOrientation(LinearLayout.VERTICAL);
+        this.setLayoutParams(params);
+        LinearLayout verticalRow = new LinearLayout(context);
+        verticalRow.setOrientation(LinearLayout.HORIZONTAL);
+        labelView = new TextView(context);
+        this.label = label;
+        labelView.setText(label);
+        //labelView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+       // labelView.getLayoutParams().width = 200; //STILL NEEDS fix
+        labelView.setGravity(Gravity.RIGHT);
+        textField = new EditText(context);
+        textField.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        textField.getLayoutParams().width = textFieldSize;
+        errorView = new TextView(context);
+        errorView.setTextSize(errorMessageTextSize);
+        errorView.setGravity(Gravity.CENTER);
+        statusImage = new ImageView(context);
+        LinearLayout.LayoutParams imageVeiwParams = new LinearLayout.LayoutParams(50,50);
+        imageVeiwParams.gravity = Gravity.CENTER;
+        statusImage.setLayoutParams(imageVeiwParams);
+        verticalRow.addView(labelView);
+        verticalRow.addView(textField);
+        verticalRow.addView(statusImage);
+        this.addView(verticalRow);
+        this.addView(errorView);
+    }
+
+
 
     private void addListeners(){
         textField.addTextChangedListener(new TextWatcher() {
@@ -113,6 +143,7 @@ public class InputFeedBack extends LinearLayout{
             }
         });
     }
+
 
     private void setupType(EditText e, int type){
         if(type == TYPE_EMAIL){
@@ -135,7 +166,9 @@ public class InputFeedBack extends LinearLayout{
             errorMessage = ERROR_MESSAGE_DEAFULT;
             regex = REGULAR_EXPRESSION_DEAFULT;
         }
-
+        else if(type == TYPE_CUSTOM){
+            return;
+        }
     }
     public void setValidation(InputValidator inputValidator){
         this.inputValidator = inputValidator;
@@ -183,6 +216,10 @@ public class InputFeedBack extends LinearLayout{
 
     public void setImageResourceInvalidInput(int imageResource){
         imgResInvalidInput = imageResource;
+    }
+
+    public Editable returnInput(){
+        return textField.getText();
     }
 
 }

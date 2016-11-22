@@ -13,11 +13,11 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        InputFeedBack inputEmail = new InputFeedBack(this, InputFeedBack.TYPE_EMAIL);
+        InputFeedBack inputEmail = new InputFeedBack(this, "Email", InputFeedBack.TYPE_EMAIL);
 
-        InputFeedBack inputPassword = new InputFeedBack(this, InputFeedBack.TYPE_PASSWORD);
+        InputFeedBack inputPassword = new InputFeedBack(this,"Password", InputFeedBack.TYPE_PASSWORD);
 
-        InputFeedBack inputNumber = new InputFeedBack(this, InputFeedBack.TYPE_NUMBER);
+        InputFeedBack inputNumber = new InputFeedBack(this,"Age",InputFeedBack.TYPE_NUMBER);
         inputNumber.setRegualarExpression("\\d{1,2}");
         inputNumber.setErrorMessage("Enter 1-2 digits");
 

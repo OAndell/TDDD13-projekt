@@ -2,7 +2,6 @@ package com.example.oscar.tddd13_projekt;
 
 import android.content.Context;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +18,7 @@ public class InputFeedbackLayout extends LinearLayout {
     private TextView labelView;
     private ImageView statusImage;
 
+    private int imageViewSize = 50;
     private int textFieldWidth = 600;
     private int errorViewTextSize = 11;
 
@@ -34,18 +34,16 @@ public class InputFeedbackLayout extends LinearLayout {
         LinearLayout verticalRow = new LinearLayout(context);
         verticalRow.setOrientation(LinearLayout.HORIZONTAL);
         labelView = new TextView(context);
-        labelView.setGravity(Gravity.RIGHT);
         textField = new EditText(context);
-        textField.setId(View.generateViewId());//Save while rotating screen;
         textField.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         textField.getLayoutParams().width = textFieldWidth;
         errorView = new TextView(context);
         errorView.setTextSize(errorViewTextSize);
         errorView.setGravity(Gravity.CENTER);
         statusImage = new ImageView(context);
-        LinearLayout.LayoutParams imageVeiwParams = new LinearLayout.LayoutParams(50,50);
-        imageVeiwParams.gravity = Gravity.CENTER;
-        statusImage.setLayoutParams(imageVeiwParams);
+        LinearLayout.LayoutParams imageViewParams = new LinearLayout.LayoutParams(imageViewSize,imageViewSize);
+        imageViewParams.gravity = Gravity.CENTER;
+        statusImage.setLayoutParams(imageViewParams);
         verticalRow.addView(labelView);
         verticalRow.addView(textField);
         verticalRow.addView(statusImage);

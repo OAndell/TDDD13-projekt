@@ -1,5 +1,6 @@
 package com.example.oscar.tddd13_projekt;
 
+import android.renderscript.ScriptGroup;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,17 +14,33 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        InputFeedBack inputEmail = new InputFeedBack(this, "Email", InputFeedBack.TYPE_EMAIL);
+        //Email example, uses the default setting for Email
+        InputFeedback inputEmail = new InputFeedback(this, "Email", InputFeedback.TYPE_EMAIL);
 
-        InputFeedBack inputPassword = new InputFeedBack(this,"Password", InputFeedBack.TYPE_PASSWORD);
-
-        InputFeedBack inputNumber = new InputFeedBack(this,"Age",InputFeedBack.TYPE_NUMBER);
-        inputNumber.setRegualarExpression("\\d{1,2}");
+        //Age Example. Uses the TYPE_NUMBER setting but regex and errormessage is changed.
+        InputFeedback inputNumber = new InputFeedback(this,"Age", InputFeedback.TYPE_NUMBER);
+        inputNumber.setRegularExpression("\\d{1,2}");
         inputNumber.setErrorMessage("Enter 1-2 digits");
 
+        //Example where the InputFeedback uses a custom inputValidation function
+        InputFeedback inputQuestion= new InputFeedback(this, "What is 5+5?", "Wrong answer", new InputValidator() {
+            @Override
+            boolean isValid(Editable s, String regex) {
+                return s.toString().equals("10");
+            }
+        });
+
+        //Password Example, Customized by setting a custom regex and errormessage.
+        //Also uses a StrengthMeter which is added to the InputFeedback object.
+        InputFeedback inputPassword = new InputFeedback(this,"Password", InputFeedback.TYPE_PASSWORD);
+        inputPassword.setRegularExpression(".{5,}");
+        inputPassword.setErrorMessage("");
+        inputPassword.addStrengthMeter(new StrengthMeter(this));
+
         layout.addView(inputEmail);
-        layout.addView(inputPassword);
         layout.addView(inputNumber);
+        layout.addView(inputQuestion);
+        layout.addView(inputPassword);
         setContentView(layout);
     }
 }

@@ -8,15 +8,23 @@ import android.text.method.PasswordTransformationMethod;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Oscar on 2016-11-18.
+ * This class is meant to give the user feedback when entering text into a textfield.
+ * An InputFeedback object contains a textView label, an editText which the user can enter text,
+ * an imageView that display a status image and a textView which displays error messages.
+ * The users input is validated by the abstract InputValidator class, which can be customized to
+ * suit the developers need.
+ * InputFeedback inherits from InputFeedbackLayout which handles the layout of the object.
+ * There is also support for adding a StrengthMeter to the layout.
+ * @author Oscar Andell
+ * @see InputValidator
+ * @see InputFeedbackLayout
+ * @see StrengthMeter
  */
-
-public class InputFeedBack extends InputFeedbackLayout{
+public class InputFeedback extends InputFeedbackLayout{
 
     private String regex;
     private String errorMessage;
@@ -41,7 +49,6 @@ public class InputFeedBack extends InputFeedbackLayout{
     private static String ERROR_MESSAGE_PASSWORD = "Password: 4-8 charactres and contain both letters and numbers";
     private static String ERROR_MESSAGE_NUMBERS = "Input must contain only digits";
 
-
     public static int TYPE_EMAIL = 0;
     public static int TYPE_PASSWORD = 1;
     public static int TYPE_NUMBER = 2;
@@ -49,19 +56,19 @@ public class InputFeedBack extends InputFeedbackLayout{
     private static int TYPE_CUSTOM = 4;
 
 
-    public InputFeedBack(Context context, String label, int type){
+    public InputFeedback(Context context, String label, int type){
         super(context);
         setup(label, type);
     }
 
-    public InputFeedBack(Context context, String label, String errorMessage, String regex){
+    public InputFeedback(Context context, String label, String errorMessage, String regex){
         super(context);
         this.errorMessage = errorMessage;
         this.regex = regex;
         setup(label, TYPE_CUSTOM);
     }
 
-    public InputFeedBack(Context context, String label, String errorMessage, InputValidator inputValidator){
+    public InputFeedback(Context context, String label, String errorMessage, InputValidator inputValidator){
         super(context);
         this.errorMessage = errorMessage;
         this.inputValidator = inputValidator;
@@ -69,7 +76,7 @@ public class InputFeedBack extends InputFeedbackLayout{
     }
 
 
-    public InputFeedBack(Context context, String label){
+    public InputFeedback(Context context, String label){
         super(context);
         setup(label, TYPE_DEFAULT);
     }
@@ -80,17 +87,18 @@ public class InputFeedBack extends InputFeedbackLayout{
         labelView = super.getLabelView();
         statusImage = super.getStatusImageView();
         labelView.setText(label);
-
         setupType(textField, type);
         addListeners();
-        inputValidator = new InputValidator(){
-            @Override
-            boolean isValid(Editable s, String regex) {
-                Pattern p = Pattern.compile(regex);
-                Matcher m = p.matcher(s.toString());
-                return m.matches();
-            }
-        };
+        if(inputValidator == null) {
+            inputValidator = new InputValidator() { //adds default isValid algorithm.
+                @Override
+                boolean isValid(Editable s, String regex) {
+                    Pattern p = Pattern.compile(regex);
+                    Matcher m = p.matcher(s.toString());
+                    return m.matches();
+                }
+            };
+        }
     }
 
     private void addListeners(){
@@ -109,10 +117,12 @@ public class InputFeedBack extends InputFeedbackLayout{
                     errorView.setText("");
                     statusImage.setBackgroundResource(imgResValidInput);
                 }
+                if(strengthMeter != null){
+                    strengthMeter.update(s); //Update the strengthMeter if one has been added.
+                }
             }
         });
     }
-
 
     private void setupType(EditText e, int type){
         if(type == TYPE_EMAIL){
@@ -135,15 +145,32 @@ public class InputFeedBack extends InputFeedbackLayout{
             errorMessage = ERROR_MESSAGE_DEAFULT;
             regex = REGULAR_EXPRESSION_DEAFULT;
         }
-        else if(type == TYPE_CUSTOM){
-            return;
-        }
     }
+
+    /**
+     * Add a strengthMeter to the InputFeedback object
+     * @param strengthMeter
+     */
+    public void addStrengthMeter(StrengthMeter strengthMeter){
+        if(this.strengthMeter == null){ //Add a new strengthMeter to the layout
+            this.strengthMeter = strengthMeter;
+            this.addView(strengthMeter);
+        }
+        else{
+            this.strengthMeter = strengthMeter; //Overwrite strengthMeter with new strengthMeter
+        }
+
+    }
+
+    /**
+     * Sets the algoritm that determine if the input is valid.
+     * @param inputValidator
+     */
     public void setValidation(InputValidator inputValidator){
         this.inputValidator = inputValidator;
     }
 
-    public void setRegualarExpression(String regex){
+    public void setRegularExpression(String regex){
         this.regex = regex;
     }
 
@@ -175,10 +202,21 @@ public class InputFeedBack extends InputFeedbackLayout{
         imgResInvalidInput = imageResource;
     }
 
+    /**
+     * Returns the text in the inputField. Does not check if the input is valid or not.
+     * @return Returns the text entered into the textfield.
+     */
     public Editable returnInput(){
         return textField.getText();
+
+
+
     }
 
+    /**
+     * Function that returns the text in the textField. Only returns valid input or null
+     * @return Function that return the input in the textField if it is valid. If the inout is invalid: return null.
+     */
     public Editable returnValidInput(){
         if(inputValidator.isValid(textField.getText(), regex)){
             return textField.getText();

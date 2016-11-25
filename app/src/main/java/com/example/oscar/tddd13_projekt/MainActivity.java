@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
         inputNumber.setRegualarExpression("\\d{1,2}");
         inputNumber.setErrorMessage("Enter 1-2 digits");
 
-
         layout.addView(inputEmail);
         layout.addView(inputPassword);
         layout.addView(inputNumber);

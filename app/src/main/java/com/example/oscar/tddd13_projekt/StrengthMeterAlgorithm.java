@@ -5,7 +5,6 @@ import android.text.Editable;
 /**
  * Created by Oscar on 2016-11-25.
  */
-
 public abstract class StrengthMeterAlgorithm {
     /**
      * Abstract algorithm to calculate strength of input.

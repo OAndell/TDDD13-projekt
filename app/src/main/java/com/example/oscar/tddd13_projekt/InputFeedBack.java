@@ -1,6 +1,9 @@
 package com.example.oscar.tddd13_projekt;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Picture;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -35,6 +38,7 @@ public class InputFeedback extends InputFeedbackLayout{
     private ImageView statusImage;
     private InputValidator inputValidator;
     private StrengthMeter strengthMeter;
+    private boolean validInput;
 
     private int imgResInvalidInput = R.drawable.cross;
     private int imgResValidInput = R.drawable.check;
@@ -55,12 +59,26 @@ public class InputFeedback extends InputFeedbackLayout{
     public static int TYPE_DEFAULT = 3;
     private static int TYPE_CUSTOM = 4;
 
-
+    /**
+     * Create an InputFeedback of a certain type.
+     * @param context
+     * @param label The text to be displayed to the left of the editText which the user enters input.
+     * @param type Integer that specifies the settings of the InputFeedback object. Found by calling
+     *             "InputFeedback.TYPE_EMAIL"
+     */
     public InputFeedback(Context context, String label, int type){
         super(context);
         setup(label, type);
     }
 
+    /**
+     * Create a custom InputFeedback with a custom, label, errorMessage and regex.
+     * Uses the default validation function.
+     * @param context
+     * @param label The text to be displayed to the left of the editText which the user enters input.
+     * @param errorMessage The text to be displayed under the editText when input is invalid.
+     * @param regex Used to validate the user input using the default validation function.
+     */
     public InputFeedback(Context context, String label, String errorMessage, String regex){
         super(context);
         this.errorMessage = errorMessage;
@@ -68,6 +86,13 @@ public class InputFeedback extends InputFeedbackLayout{
         setup(label, TYPE_CUSTOM);
     }
 
+    /**
+     * Create a custom InputFeedback with a custom, label, errorMessage and validation function.
+     * @param context
+     * @param label The text to be displayed to the left of the editText which the user enters input.
+     * @param errorMessage The text to be displayed under the editText when input is invalid.
+     * @param inputValidator Abstract class to with validation function
+     */
     public InputFeedback(Context context, String label, String errorMessage, InputValidator inputValidator){
         super(context);
         this.errorMessage = errorMessage;
@@ -75,21 +100,29 @@ public class InputFeedback extends InputFeedbackLayout{
         setup(label, TYPE_CUSTOM);
     }
 
-
+    /**
+     * Create an InputFeedback with the default setting. Validation, regex and  errormessage is set
+     * to default values.
+     * @param context
+     * @param label The text to be displayed to the left of the editText which the user enters input.
+     */
     public InputFeedback(Context context, String label){
         super(context);
         setup(label, TYPE_DEFAULT);
     }
 
+    /**
+     * Private  helper function to initialize the object.
+     */
     private void setup(String label, int type){
-        errorView = super.getErrorView();
+        errorView = super.getErrorView(); //Get the components from the superclass.
         textField = super.getInputField();
         labelView = super.getLabelView();
         statusImage = super.getStatusImageView();
         labelView.setText(label);
-        setupType(textField, type);
+        setupType(textField, type); //Adds type specific settings
         addListeners();
-        if(inputValidator == null) {
+        if(inputValidator == null) { //check if a custom InputValidator has been specified in the constuctor.
             inputValidator = new InputValidator() { //adds default isValid algorithm.
                 @Override
                 boolean isValid(Editable s, String regex) {
@@ -101,6 +134,9 @@ public class InputFeedback extends InputFeedbackLayout{
         }
     }
 
+    /**
+     * Adds the afterTextChangedListerner to the textField. This then calls the validation function.
+     */
     private void addListeners(){
         textField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -109,13 +145,15 @@ public class InputFeedback extends InputFeedbackLayout{
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
-                if(!inputValidator.isValid(s, regex)){
+                if(!inputValidator.isValid(s, regex)){ //call vaidation method in the inputValidator.
                     errorView.setText(errorMessage);
-                    statusImage.setBackgroundResource(imgResInvalidInput);
+                    statusImage.setBackgroundResource(imgResInvalidInput); //Invalid Input
+                    validInput = false;
                 }
                 else{
                     errorView.setText("");
-                    statusImage.setBackgroundResource(imgResValidInput);
+                    statusImage.setBackgroundResource(imgResValidInput); //Valid Input
+                    validInput = true;
                 }
                 if(strengthMeter != null){
                     strengthMeter.update(s); //Update the strengthMeter if one has been added.
@@ -124,22 +162,26 @@ public class InputFeedback extends InputFeedbackLayout{
         });
     }
 
+    /**
+     * Sets specific settings to the InputFeedback depending on the type which is specified in the
+     * constructor
+     */
     private void setupType(EditText e, int type){
         if(type == TYPE_EMAIL){
             errorMessage = ERROR_MESSAGE_EMAIL;
             regex = REGULAR_EXPRESSION_EMAIL;
-            e.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            e.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS); //keyboard setting
         }
         else if(type == TYPE_PASSWORD){
             errorMessage = ERROR_MESSAGE_PASSWORD;
             regex = REGULAR_EXPRESSION_PASSWORD;
-            e.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            e.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            e.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD); //keyboard setting
+            e.setTransformationMethod(PasswordTransformationMethod.getInstance()); //Hide password
         }
         else if(type == TYPE_NUMBER){
             errorMessage = ERROR_MESSAGE_NUMBERS;
             regex = REGULAR_EXPRESSION_NUMBER;
-            e.setInputType(InputType.TYPE_CLASS_NUMBER);
+            e.setInputType(InputType.TYPE_CLASS_NUMBER); //keyboard setting
         }
         else if(type == TYPE_DEFAULT){
             errorMessage = ERROR_MESSAGE_DEAFULT;
@@ -150,6 +192,7 @@ public class InputFeedback extends InputFeedbackLayout{
     /**
      * Add a strengthMeter to the InputFeedback object
      * @param strengthMeter
+     * @see StrengthMeter
      */
     public void addStrengthMeter(StrengthMeter strengthMeter){
         if(this.strengthMeter == null){ //Add a new strengthMeter to the layout
@@ -159,58 +202,81 @@ public class InputFeedback extends InputFeedbackLayout{
         else{
             this.strengthMeter = strengthMeter; //Overwrite strengthMeter with new strengthMeter
         }
-
     }
 
     /**
      * Sets the algoritm that determine if the input is valid.
      * @param inputValidator
+     * @see InputValidator
      */
     public void setValidation(InputValidator inputValidator){
         this.inputValidator = inputValidator;
     }
 
+    /**
+     * Funtion to give the InputFeedback a new regex that can be used to validate input.
+     * @param regex RegularExpression
+     */
     public void setRegularExpression(String regex){
         this.regex = regex;
     }
 
+    /**
+     * Function to set the error text that is displayed when input is invalid.
+     * @param errorMessage text to be displayed.
+     */
     public void setErrorMessage(String errorMessage){
         this.errorMessage = errorMessage;
     }
 
+    /**
+     * @return Returns the text that is displayed in the LabelView
+     */
     public String getLabel(){
         return label;
     }
 
+    /**
+     * @param label Sets the text of the Label
+     */
     public void setLabel(String label){
         this.label = label;
     }
 
+    /**
+     * @return Returns the text that is displayed in the errorView when the input is invalid.
+     */
     public String getErrorMessage(){
         return errorMessage;
     }
 
+    /**
+     * @return Returns the current regex
+     */
     public String getRegualarExpression(){
         return regex;
     }
 
+    /**
+     *  Used to change the image displayed when the input is valid.
+     * @param imageResource
+     */
     public void setImageResourceValidInput(int imageResource){
         imgResValidInput = imageResource;
     }
-
+    /**
+     * Used to change the image displayed when the input is invalid.
+     * @param imageResource
+     */
     public void setImageResourceInvalidInput(int imageResource){
         imgResInvalidInput = imageResource;
     }
-
     /**
      * Returns the text in the inputField. Does not check if the input is valid or not.
      * @return Returns the text entered into the textfield.
      */
     public Editable returnInput(){
         return textField.getText();
-
-
-
     }
 
     /**
@@ -218,10 +284,18 @@ public class InputFeedback extends InputFeedbackLayout{
      * @return Function that return the input in the textField if it is valid. If the inout is invalid: return null.
      */
     public Editable returnValidInput(){
-        if(inputValidator.isValid(textField.getText(), regex)){
+        if(validInput){
             return textField.getText();
         }
         return null;
+    }
+
+    /**
+     * Check if the text enterd into the inputFeedBack is valid.
+     * @return Return true if input is valid.
+     */
+    public boolean hasValidInput(){
+        return hasValidInput();
     }
 
 }

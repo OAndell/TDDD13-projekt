@@ -1,6 +1,5 @@
 package com.example.oscar.tddd13_projekt;
 
-import android.renderscript.ScriptGroup;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;

@@ -3,7 +3,9 @@ package com.example.oscar.tddd13_projekt;
 import android.text.Editable;
 
 /**
- ** Created by Oscar on 2016-11-21.*/
+ ** Created by Oscar on 2016-11-21.
+ *
+ */
 public abstract class InputValidator {
     /**
      * Abstract function to determine if the input of an editText is valid.

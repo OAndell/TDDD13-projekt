@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.widget.LinearLayout;
 
+import com.example.oscar.tddd13_projekt.InputFeedback.InputFeedback;
+import com.example.oscar.tddd13_projekt.InputFeedback.InputValidator;
+import com.example.oscar.tddd13_projekt.StrengthMeter.StrengthMeter;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -22,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
         inputNumber.setErrorMessage("Enter 1-2 digits");
 
         //Example where the InputFeedback uses a custom inputValidation function
-        InputFeedback inputQuestion= new InputFeedback(this, "What is 5+5?", "Wrong answer", new InputValidator() {
+        InputFeedback inputQuestion= new InputFeedback(this, "Capital of Norway?", "Wrong answer", new InputValidator() {
             @Override
-            boolean isValid(Editable s, String regex) {
-                return s.toString().equals("10");
+            public boolean isValid(Editable s, String regex) {
+                return (s.toString().toLowerCase().equals("oslo"));
             }
         });
 

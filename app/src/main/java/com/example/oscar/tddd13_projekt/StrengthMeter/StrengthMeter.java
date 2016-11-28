@@ -42,7 +42,7 @@ public class StrengthMeter extends View{
     private String state1 = "Weak";
     private String state2 = "Medium";
     private String state3 = "Strong";
-    private String state4 = "VeryStrong";
+    private String state4 = "Very Strong";
 
     private String currentString = "";
 

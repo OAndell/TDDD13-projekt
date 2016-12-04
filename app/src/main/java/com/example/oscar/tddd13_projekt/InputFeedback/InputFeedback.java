@@ -296,7 +296,7 @@ public class InputFeedback extends InputFeedbackLayout{
      * @return Return true if input is valid.
      */
     public boolean hasValidInput(){
-        return hasValidInput();
+        return validInput;
     }
 
 }

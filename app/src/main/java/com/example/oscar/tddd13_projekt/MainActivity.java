@@ -11,6 +11,12 @@ import com.example.oscar.tddd13_projekt.StrengthMeter.StrengthMeter;
 
 public class MainActivity extends AppCompatActivity {
 
+    InputFeedback inputEmail;
+    InputFeedback inputNumber;
+    InputFeedback inputQuestion;
+    InputFeedback inputPassword;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,15 +24,15 @@ public class MainActivity extends AppCompatActivity {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         //Email example, uses the default setting for Email
-        InputFeedback inputEmail = new InputFeedback(this, "Email", InputFeedback.TYPE_EMAIL);
+        inputEmail = new InputFeedback(this, "Email", InputFeedback.TYPE_EMAIL);
 
         //Age Example. Uses the TYPE_NUMBER setting but regex and errormessage is changed.
-        InputFeedback inputNumber = new InputFeedback(this,"Age", InputFeedback.TYPE_NUMBER);
+        inputNumber = new InputFeedback(this,"Age", InputFeedback.TYPE_NUMBER);
         inputNumber.setRegularExpression("\\d{1,2}");
         inputNumber.setErrorMessage("Enter 1-2 digits");
 
         //Example where the InputFeedback uses a custom inputValidation function
-        InputFeedback inputQuestion= new InputFeedback(this, "Capital of Norway?", "Wrong answer", new InputValidator() {
+         inputQuestion= new InputFeedback(this, "Capital of Norway?", "Wrong answer", new InputValidator() {
             @Override
             public boolean isValid(Editable s, String regex) {
                 return (s.toString().toLowerCase().equals("oslo"));
@@ -35,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Password Example, Customized by setting a custom regex and errormessage.
         //Also uses a StrengthMeter which is added to the InputFeedback object.
-        InputFeedback inputPassword = new InputFeedback(this,"Password", InputFeedback.TYPE_PASSWORD);
+        inputPassword = new InputFeedback(this,"Password", InputFeedback.TYPE_PASSWORD);
         inputPassword.setRegularExpression(".{5,}");
         inputPassword.setErrorMessage("");
         inputPassword.addStrengthMeter(new StrengthMeter(this));
@@ -45,5 +51,13 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(inputQuestion);
         layout.addView(inputPassword);
         setContentView(layout);
+
+        //Setup Testing id
+        inputEmail.getInputField().setId(1000);
+        inputNumber.getInputField().setId(1001);
+        inputQuestion.getInputField().setId(1002);
+        inputPassword.getInputField().setId(1003);
+
     }
+
 }

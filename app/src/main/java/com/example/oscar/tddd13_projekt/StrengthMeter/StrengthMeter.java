@@ -37,6 +37,7 @@ public class StrengthMeter extends View{
     private int colorMedium = Color.YELLOW;
     private int colorGood = Color.GREEN;
     private int currentColor;
+    private int score;
 
     private String state0 = "";
     private String state1 = "Weak";
@@ -94,7 +95,7 @@ public class StrengthMeter extends View{
      * @see StrengthMeterAlgorithm
      */
     public void update(Editable s){
-        int score = algorithm.calcStrength(s);
+        score = algorithm.calcStrength(s);
         if(score == 0){
             currentLength = 0;
             currentString = state0;
@@ -132,7 +133,6 @@ public class StrengthMeter extends View{
         paint.setTextSize(textSize);
         paint.setStyle(Paint.Style.FILL);
         currentLength = 0;
-
     }
 
     /**
@@ -171,6 +171,14 @@ public class StrengthMeter extends View{
         this.state2 = state2;
         this.state3 = state3;
         this.state4 = state4;
+    }
+
+    /**
+     * Get the current strength score.
+     * @return Integer between 0-4
+     */
+    public int getScore(){
+        return score;
     }
 
 

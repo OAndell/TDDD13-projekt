@@ -17,7 +17,6 @@ import com.example.oscar.tddd13_projekt.InputFeedback.InputValidator;
 
 import java.util.ArrayList;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -37,6 +36,7 @@ public class InputTest {
     private ArrayList<String> validNumbers = new ArrayList<>();
     private ArrayList<String> invalidNumbers = new ArrayList<>();
     private ArrayList<String> validPassword = new ArrayList<>();
+    private ArrayList<String> invalidPassword = new ArrayList<>();
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
@@ -47,6 +47,8 @@ public class InputTest {
         initInvalidEmailAdresses();
         initValidNumbers();
         initInvalidNumbers();
+        initValidPassword();
+        initInvalidPassword();
     }
 
     public void initValidEmailAdresses() {
@@ -59,8 +61,7 @@ public class InputTest {
     public void initInvalidEmailAdresses(){
         invalidEmail.add("123");
         invalidEmail.add("thisisnotanemail.com");
-        invalidEmail.add("Hej mitt namn ar Olof");
-        invalidEmail.add("AspectreishauntingEuropethespectreofcommunism.AllthepowersofoldEuropehaveenteredintoaholyallia...");
+        invalidEmail.add("AspectreishauntingEuropethespectreofcommunism.AllthepowersofoldEurope....");
     }
 
     public void initValidNumbers(){
@@ -79,8 +80,14 @@ public class InputTest {
 
     public void initValidPassword(){
         validPassword.add("password123");
+        validPassword.add("hejhejjagklararmignog");
     }
 
+    public void initInvalidPassword(){
+        invalidPassword.add("1");
+        invalidPassword.add("12");
+        invalidPassword.add("12a");
+    }
 
     @Test
     public void validEmailTest() {
@@ -102,6 +109,15 @@ public class InputTest {
         testInput(1001,invalidNumbers,false, mActivityRule.getActivity().inputNumber);
     }
 
+    @Test
+    public void validPasswordTest(){
+        testInput(1003,validPassword,true, mActivityRule.getActivity().inputPassword);
+    }
+
+    @Test
+    public void invalidPasswordTest(){
+        testInput(1003,invalidPassword,false, mActivityRule.getActivity().inputPassword);
+    }
 
     public void testInput(int viewId,  ArrayList<String> testCases, boolean correctAns, InputFeedback inputfeedback){
         for (int i = 0; i < testCases.size(); i++) {
